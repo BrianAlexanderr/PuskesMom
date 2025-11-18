@@ -11,61 +11,61 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.puskesmom.databinding.ActivityMainBinding;
+import com.example.puskesmom.databinding.ActivityCreateAccountBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MainActivity extends AppCompatActivity {
+public class CreateAccountActivity extends AppCompatActivity {
 
-    ActivityMainBinding binding;
-    FirebaseAuth auth;
+    private ActivityCreateAccountBinding binding;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+
+         binding = ActivityCreateAccountBinding.inflate(getLayoutInflater());
+
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
+
         auth = FirebaseAuth.getInstance();
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        binding.createAccount.setOnClickListener(new View.OnClickListener() {
+        binding.createBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), CreateAccountActivity.class);
-                startActivity(i);
-                finish();
+                handleCreateAccount();
             }
         });
 
-        binding.login.setOnClickListener(view -> handleLogin());
-
     }
 
-    public void handleLogin(){
-        String email = binding.email.getText().toString().trim();
-        String password = binding.password.getText().toString().trim();
+    public void handleCreateAccount(){
+        String email = binding.emailCreate.getText().toString().trim();
+        String password = binding.passwordCreate.getText().toString().trim();
 
         if (email.isEmpty() || password.isEmpty()){
             Toast.makeText(this, "Email and Password shouldn't be empty", Toast.LENGTH_SHORT);
             return;
         }
 
-        auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task ->{
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT);
-
-                        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                        i.putExtra("email", email);
+                        Toast.makeText(this, "Account created Successfully", Toast.LENGTH_SHORT);
+                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(i);
                         finish();
-                    }else{
+                    }else {
                         Toast.makeText(this, "Error: " + task.getException(), Toast.LENGTH_SHORT);
                     }
                 });
+
     }
+
 }
