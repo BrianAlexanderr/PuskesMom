@@ -14,13 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PuskesMom">
         <activity
-            android:name=".HomeActivity"
+            android:name=".AddChildActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".CreateAccountActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service
             android:name=".helper.MyFirebaseMessagingService"
             android:exported="false">

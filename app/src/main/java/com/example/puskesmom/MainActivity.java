@@ -1,12 +1,19 @@
 package com.example.puskesmom;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -18,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
     FirebaseAuth auth;
+
+    private ActivityResultLauncher<String> notificationPermissionLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,40 +41,5 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        binding.createAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), CreateAccountActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });
-
-        binding.login.setOnClickListener(view -> handleLogin());
-
-    }
-
-    public void handleLogin(){
-        String email = binding.email.getText().toString().trim();
-        String password = binding.password.getText().toString().trim();
-
-        if (email.isEmpty() || password.isEmpty()){
-            Toast.makeText(this, "Email and Password shouldn't be empty", Toast.LENGTH_SHORT);
-            return;
-        }
-
-        auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task ->{
-                    if(task.isSuccessful()){
-                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT);
-
-                        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                        i.putExtra("email", email);
-                        startActivity(i);
-                        finish();
-                    }else{
-                        Toast.makeText(this, "Error: " + task.getException(), Toast.LENGTH_SHORT);
-                    }
-                });
     }
 }
