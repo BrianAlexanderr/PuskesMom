@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.puskesmom.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions;
 
 public class MainActivity extends AppCompatActivity {
 
