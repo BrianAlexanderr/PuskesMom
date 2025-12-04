@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/nav_schedule"
+        android:icon="@drawable/calendar_icon"
+        android:title="Schedule" />
+
+    <item
+        android:id="@+id/nav_alert"
+        android:icon="@drawable/panic_button"
+        android:title="Alert" />
+
+    <item
+        android:id="@+id/nav_community"
+        android:icon="@drawable/stunt_predict_ic"
+        android:title="Predict" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/chat_ic"
+        android:title="Chat" />
+</menu>
