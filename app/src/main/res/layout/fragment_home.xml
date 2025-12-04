@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#56B2E6"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:paddingBottom="24dp">
+            <ImageView
+            android:id="@+id/img_profile"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/profile_pic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/img_logo"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/circle_box"
+                android:contentDescription="app logo"
+                android:padding="12dp"
+                android:src="@drawable/logo_ic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txt_welcome_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Welcome!"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/img_profile"
+                app:layout_constraintTop_toBottomOf="@id/img_profile" />
+
+            <TextView
+                android:id="@+id/txt_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Long Name"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                android:textStyle="normal"
+                app:layout_constraintStart_toStartOf="@id/txt_welcome_label"
+                app:layout_constraintTop_toBottomOf="@id/txt_welcome_label" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_white_rounded_top"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/title_interactive_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="INTERACTIVE"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/subtitle_calender_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CALENDER"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_interactive_2" />
+
+            <LinearLayout
+                android:id="@+id/container_calendar"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_card_grey"
+                android:orientation="vertical"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/container_schedule_2"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/subtitle_calender_2">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:text="OCTOBER 2025" android:textStyle="bold" />
+                <View android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="4dp" android:background="#D1D1D1" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <TextView
+                android:id="@+id/title_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="SCHEDULE"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/subtitle_calender_2"
+                app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+                app:layout_constraintTop_toTopOf="@id/title_interactive_2" />
+
+            <LinearLayout
+                android:id="@+id/container_schedule_1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_grey"
+                android:orientation="vertical"
+                android:padding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+                app:layout_constraintTop_toBottomOf="@id/subtitle_calender_2">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="DATE" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="21 OCTOBER 2025" android:textSize="10sp" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="4dp" android:background="@android:color/darker_gray" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="STATUS: DONE" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/container_schedule_2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_card_grey"
+                android:orientation="vertical"
+                android:padding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+                app:layout_constraintTop_toBottomOf="@id/container_schedule_1">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="DATE" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="5 DECEMBER 2025" android:textSize="10sp" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="4dp" android:background="@android:color/darker_gray" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="STATUS: UPCOMING" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/title_education"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="POJOK EDUKASI"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/container_schedule_2" />
+
+            <TextView
+                android:id="@+id/btn_education_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="More >"
+                android:textColor="#56B2E6"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/title_education"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/title_education" />
+
+            <LinearLayout
+                android:id="@+id/container_articles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/title_education"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_grey"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical">
+
+                    <View
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="#BDBDBD"/> <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tips Menjaga Kesehatan"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Baca selengkapnya tentang cara menjaga pola makan..."
+                        android:textSize="10sp"
+                        android:maxLines="2"
+                        android:ellipsize="end"/>
+                </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_grey"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <View
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="#BDBDBD"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pentingnya Olahraga"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Olahraga rutin dapat meningkatkan imun tubuh..."
+                            android:textSize="10sp"
+                            android:maxLines="2"
+                            android:ellipsize="end"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/title_support"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="CONTACT SUPPORT"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/container_articles" /> <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/bg_banner_blue"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title_support">
+
+            <ImageView android:id="@+id/icon_support" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/profile_pic" app:tint="@android:color/black" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="NEED HELP?\nCONTACT OUR HELP CENTER!" android:textColor="#333" android:textSize="12sp" android:textStyle="bold" app:layout_constraintStart_toEndOf="@id/icon_support" app:layout_constraintEnd_toStartOf="@+id/btn_here" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView android:id="@+id/btn_here" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:text="HERE" android:textColor="@android:color/white" android:textStyle="bold" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</ScrollView>
