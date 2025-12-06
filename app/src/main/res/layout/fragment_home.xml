@@ -45,6 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:fontFamily="@font/paytone_one"
                 android:text="Welcome!"
                 android:textColor="@android:color/white"
                 android:textSize="28sp"
@@ -76,6 +77,7 @@
                 android:id="@+id/title_interactive_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/paytone_one"
                 android:text="INTERACTIVE"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
@@ -105,7 +107,14 @@
                 app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/subtitle_calender_2">
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:text="OCTOBER 2025" android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/paytone_one"
+                    android:gravity="center"
+                    android:text="OCTOBER 2025"
+                    android:textStyle="bold" />
                 <View android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="4dp" android:background="#D1D1D1" />
             </LinearLayout>
 
@@ -121,6 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:fontFamily="@font/paytone_one"
                 android:text="SCHEDULE"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@id/subtitle_calender_2"
@@ -139,10 +149,10 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/guideline_vertical"
                 app:layout_constraintTop_toBottomOf="@id/subtitle_calender_2">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="DATE" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="21 OCTOBER 2025" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DATE" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="21 OCTOBER 2025" android:textSize="10sp" />
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="4dp" android:background="@android:color/darker_gray" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="STATUS: DONE" android:textSize="10sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="STATUS: DONE" android:textSize="10sp" android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
@@ -157,10 +167,10 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/guideline_vertical"
                 app:layout_constraintTop_toBottomOf="@id/container_schedule_1">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="DATE" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="5 DECEMBER 2025" android:textSize="10sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DATE" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="5 DECEMBER 2025" android:textSize="10sp" />
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="4dp" android:background="@android:color/darker_gray" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" text="STATUS: UPCOMING" android:textSize="10sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="STATUS: UPCOMING" android:textSize="10sp" android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
@@ -168,6 +178,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:fontFamily="@font/paytone_one"
                 android:text="POJOK EDUKASI"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
@@ -274,6 +285,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:fontFamily="@font/paytone_one"
                 android:text="CONTACT SUPPORT"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
@@ -290,7 +302,20 @@
 
             <ImageView android:id="@+id/icon_support" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/profile_pic" app:tint="@android:color/black" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
             <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="NEED HELP?\nCONTACT OUR HELP CENTER!" android:textColor="#333" android:textSize="12sp" android:textStyle="bold" app:layout_constraintStart_toEndOf="@id/icon_support" app:layout_constraintEnd_toStartOf="@+id/btn_here" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
-            <TextView android:id="@+id/btn_here" android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:text="HERE" android:textColor="@android:color/white" android:textStyle="bold" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/btn_here"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/paytone_one"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:text="HERE"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

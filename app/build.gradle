@@ -46,6 +46,7 @@ dependencies {
     androidTestImplementation libs.espresso.core
     //noinspection UseTomlInstead
     implementation platform("com.google.firebase:firebase-bom:34.6.0")
+    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
     implementation libs.firebase.analytics
     implementation libs.firebase.auth
     implementation libs.firebase.firestore
