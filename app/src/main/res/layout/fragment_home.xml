@@ -27,17 +27,34 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/img_logo"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginEnd="24dp"
+            <LinearLayout
+                android:id="@+id/btn_logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/circle_box"
-                android:padding="12dp"
-                android:src="@drawable/logo_ic"
+                android:layout_marginEnd="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@android:color/transparent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_signout"
+                        android:scaleType="centerCrop"/>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txt_welcome_label"
@@ -82,6 +99,111 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <FrameLayout
+                android:id="@+id/container_child_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@id/title_prof"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/card_child_profile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_grey"
+                    android:padding="16dp"
+                    android:visibility="visible">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_child_photo"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        app:cardCornerRadius="25dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+                        <ImageView
+                            android:id="@+id/img_child_photo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/profile_pic"
+                            android:scaleType="centerCrop"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintStart_toEndOf="@id/cv_child_photo"
+                        app:layout_constraintEnd_toStartOf="@id/btn_child_detail"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+                        <TextView
+                            android:id="@+id/txt_child_name_display"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Muhammad Adnan"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"/>
+                        <TextView
+                            android:id="@+id/txt_child_age_display"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2 Tahun 5 Bulan"
+                            android:textSize="12sp"
+                            android:textColor="#555555"/>
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/btn_child_detail"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/outline_chevron_right"
+                        app:tint="#56B2E6"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_add_child"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card_grey"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:visibility="gone">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_add_circle"
+                        app:tint="#56B2E6"
+                        android:layout_marginBottom="8dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add Your Child Profile"
+                        android:textStyle="bold"
+                        android:textColor="#56B2E6"
+                        android:textSize="16sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Monitor growth &amp; schedule easily"
+                        android:textSize="12sp"
+                        android:textColor="#777777"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+
+            </FrameLayout>
+
             <TextView
                 android:id="@+id/title_interactive_2"
                 android:layout_width="wrap_content"
@@ -91,8 +213,9 @@
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:layout_marginTop="30dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title_prof"/>
+                app:layout_constraintTop_toBottomOf="@id/container_child_section"/>
 
             <TextView
                 android:id="@+id/subtitle_calender_2"
@@ -200,36 +323,61 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/container_calendar" />
 
-            <LinearLayout
-                android:id="@+id/container_schedule_1"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_schedule"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card_grey"
-                android:orientation="vertical"
-                android:padding="16dp"
-                app:layout_constraintTop_toBottomOf="@id/title_schedule">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DATE" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="21 OCTOBER 2025" android:textSize="12sp" />
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="6dp" android:background="@android:color/darker_gray" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="STATUS: DONE" android:textSize="12sp" android:textStyle="bold" />
-            </LinearLayout>
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/title_schedule"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
             <LinearLayout
-                android:id="@+id/container_schedule_2"
+                android:id="@+id/container_contact_doctor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card_grey"
+                android:layout_marginTop="24dp"
                 android:orientation="vertical"
-                android:padding="16dp"
-                app:layout_constraintTop_toBottomOf="@id/container_schedule_1">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DATE" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="5 DECEMBER 2025" android:textSize="12sp" />
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="6dp" android:background="@android:color/darker_gray" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="STATUS: UPCOMING" android:textSize="12sp" android:textStyle="bold" />
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@id/rv_schedule"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="CONTACT DOCTOR"
+                        android:fontFamily="@font/paytone_one"
+                        android:textSize="16sp"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/btn_see_all_doctors"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See All >"
+                        android:textColor="#56B2E6"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"/>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_home_doctors"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"/>
+            </LinearLayout>
             <TextView
                 android:id="@+id/title_education"
                 android:layout_width="wrap_content"
@@ -241,8 +389,9 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/container_schedule_2"
+                app:layout_constraintTop_toBottomOf="@id/container_contact_doctor"
                 app:layout_goneMarginTop="24dp" />
+
             <TextView
                 android:id="@+id/btn_education_more"
                 android:layout_width="wrap_content"
@@ -271,7 +420,6 @@
                     android:padding="12dp"
                     android:layout_marginBottom="8dp"
                     android:gravity="center_vertical">
-
                     <View
                         android:layout_width="60dp"
                         android:layout_height="60dp"
@@ -282,14 +430,12 @@
                         android:layout_weight="1"
                         android:layout_marginStart="12dp"
                         android:orientation="vertical">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Tips Menjaga Kesehatan"
                             android:textStyle="bold"
                             android:textColor="@android:color/black"/>
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -307,26 +453,22 @@
                     android:orientation="horizontal"
                     android:padding="12dp"
                     android:gravity="center_vertical">
-
                     <View
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:background="#BDBDBD"/>
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="12dp"
                         android:orientation="vertical">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Pentingnya Olahraga"
                             android:textStyle="bold"
                             android:textColor="@android:color/black"/>
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -359,8 +501,28 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title_support">
 
-                <ImageView android:id="@+id/icon_support" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/profile_pic" app:tint="@android:color/black" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="NEED HELP?\nCONTACT OUR HELP CENTER!" android:textColor="#333" android:textSize="12sp" android:textStyle="bold" app:layout_constraintStart_toEndOf="@id/icon_support" app:layout_constraintEnd_toStartOf="@+id/btn_here" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+                <ImageView
+                    android:id="@+id/icon_support"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/profile_pic"
+                    app:tint="@android:color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="BUTUH BANTUAN?\nHUBUNGI SUPPORT KAMI!"
+                    android:textColor="#333"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/icon_support"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_here"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <TextView
                     android:id="@+id/btn_here"
@@ -369,7 +531,7 @@
                     android:fontFamily="@font/paytone_one"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="8dp"
-                    android:text="HERE"
+                    android:text="SINI"
                     android:textColor="@android:color/white"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"

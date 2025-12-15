@@ -2,95 +2,139 @@ package com.example.puskesmom;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.puskesmom.databinding.ActivityRegisterBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etEmail, etPassword, etConfirmPw;
-    private Button btnRegister;
-    private TextView tvLogin;
+    ActivityRegisterBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(binding.getRoot());
 
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        etConfirmPw = findViewById(R.id.etConfirmPw);
-        btnRegister = findViewById(R.id.btnRegister);
-        tvLogin = findViewById(R.id.tvLogin);
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
 
-        btnRegister.setOnClickListener(new View.OnClickListener() {
+        binding.btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                validateRegister();
+            public void onClick(View view) {
+                validateAndRegister();
             }
         });
 
-        // Text Login → balik ke LoginActivity
-        tvLogin.setOnClickListener(new View.OnClickListener() {
+        binding.tvLoginLink.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                startActivity(intent);
+            public void onClick(View view) {
+                Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(i);
                 finish();
             }
         });
+
     }
 
-    private void validateRegister() {
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-        String confirmPw = etConfirmPw.getText().toString().trim();
+    private void validateAndRegister() {
+        String email = binding.etEmail.getText().toString().trim();
+        String password = binding.etPassword.getText().toString().trim();
+        String confirmPassword = binding.etConfirmPassword.getText().toString().trim();
+        String name = binding.etName.getText().toString().trim();
 
-        if (TextUtils.isEmpty(email)) {
-            etEmail.setError("Email wajib diisi");
-            etEmail.requestFocus();
-            return;
+        boolean isValid = true;
+
+        if (email.isEmpty()) {
+            binding.tvErrorEmail.setText("Email tidak boleh kosong");
+            binding.tvErrorEmail.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else if (!email.contains("@gmail.com")) {
+            binding.tvErrorEmail.setText("Email harus menggunakan @gmail.com");
+            binding.tvErrorEmail.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else {
+            binding.tvErrorEmail.setVisibility(View.GONE); // Sembunyikan jika benar
         }
 
-        if (email.length() < 4) {
-            etEmail.setError("Email minimal 4 karakter");
-            etEmail.requestFocus();
-            return;
+        // --- VALIDASI NAMA ---
+        if (name.isEmpty()){
+            binding.tvErrorName.setText("Nama tidak boleh kosong");
+            binding.tvErrorName.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else{
+            binding.tvErrorName.setVisibility(View.GONE);
         }
 
-        if (TextUtils.isEmpty(password)) {
-            etPassword.setError("Password wajib diisi");
-            etPassword.requestFocus();
-            return;
+        // --- VALIDASI PASSWORD ---
+        if (password.isEmpty()) {
+            binding.tvErrorPassword.setText("Password tidak boleh kosong");
+            binding.tvErrorPassword.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else if (password.length() < 6) {
+            binding.tvErrorPassword.setText("Password minimal 6 karakter");
+            binding.tvErrorPassword.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else {
+            binding.tvErrorPassword.setVisibility(View.GONE);
         }
 
-        if (password.length() < 8) {
-            etPassword.setError("Password minimal 8 karakter");
-            etPassword.requestFocus();
-            return;
+        // --- VALIDASI CONFIRM PASSWORD ---
+        if (!confirmPassword.equals(password)) {
+            binding.tvErrorConfirm.setText("Password tidak sama");
+            binding.tvErrorConfirm.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else {
+            binding.tvErrorConfirm.setVisibility(View.GONE);
         }
 
-        if (TextUtils.isEmpty(confirmPw)) {
-            etConfirmPw.setError("Confirm password wajib diisi");
-            etConfirmPw.requestFocus();
-            return;
+        // --- JIKA SEMUA VALID ---
+        if (isValid) {
+            redirectLogin();
         }
+    }
 
-        if (!password.equals(confirmPw)) {
-            etConfirmPw.setError("Password tidak sama");
-            etConfirmPw.requestFocus();
-            return;
-        }
+    private void redirectLogin() {
+        String email = binding.etEmail.getText().toString().trim();
+        String password = binding.etPassword.getText().toString().trim();
+        String name = binding.etName.getText().toString().trim();
 
-        // Kalo udah Register, user bakal disuruh login
-        // Mungkin bisa diubah juga jadi langsung ke Home Page kalo mau
-        // Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
-        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        assert auth.getCurrentUser() != null;
+                        String userID = auth.getCurrentUser().getUid();
+
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("email", email);
+                        userMap.put("name", name);
+                        FieldValue FiledValue;
+                        userMap.put("createdAt", FieldValue.serverTimestamp());
+
+                        db.collection("users").document(userID)
+                                .set(userMap)
+                                .addOnSuccessListener(aVoid -> {
+                                    auth.signOut();
+                                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                                });
+                    }
+                });
     }
 }

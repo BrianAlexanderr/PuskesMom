@@ -2,88 +2,108 @@ package com.example.puskesmom;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.puskesmom.databinding.ActivityLoginBinding;
+import com.google.firebase.auth.FirebaseAuth;
+
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etEmail, etPassword;
-    private Button btnLogin;
-    private TextView tvRegister, tvForgot;
+    ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(binding.getRoot());
 
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        btnLogin = findViewById(R.id.btnLogin);
-        tvRegister = findViewById(R.id.tvRegister);
-        tvForgot = findViewById(R.id.tvForgot);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 validateLogin();
             }
         });
 
-        tvRegister.setOnClickListener(new View.OnClickListener() {
+        binding.tvRegisterLink.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(i);
+                finish();
             }
         });
 
-        // Lupa Password → sengaja kosong (belum dipakai)
-        tvForgot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: nanti
-            }
-        });
     }
 
     private void validateLogin() {
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
+        String email = binding.etEmail.getText().toString().trim();
+        String password = binding.etPassword.getText().toString().trim();
 
-        // Email Validation
-        if (TextUtils.isEmpty(email)) {
-            etEmail.setError("Email wajib diisi");
-            etEmail.requestFocus();
-            return;
+        boolean isValid = true;
+
+        if (email.isEmpty()) {
+            binding.tvErrorEmail.setText("Email tidak boleh kosong");
+            binding.tvErrorEmail.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else if (!email.contains("@gmail.com")) {
+            binding.tvErrorEmail.setText("Email harus menggunakan @gmail.com");
+            binding.tvErrorEmail.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else {
+            binding.tvErrorEmail.setVisibility(View.GONE); // Sembunyikan jika benar
         }
 
-        if (email.length() < 4) {
-            etEmail.setError("Email minimal 4 karakter");
-            etEmail.requestFocus();
-            return;
+        // --- VALIDASI PASSWORD ---
+        if (password.isEmpty()) {
+            binding.tvErrorPassword.setText("Password tidak boleh kosong");
+            binding.tvErrorPassword.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else if (password.length() < 6) {
+            binding.tvErrorPassword.setText("Password minimal 6 karakter");
+            binding.tvErrorPassword.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else {
+            binding.tvErrorPassword.setVisibility(View.GONE);
         }
 
-        // Password Validation
-        if (TextUtils.isEmpty(password)) {
-            etPassword.setError("Password wajib diisi");
-            etPassword.requestFocus();
-            return;
+        // --- JIKA SEMUA VALID ---
+        if (isValid) {
+            Login();
+            Toast.makeText(this, "Data Valid! Mendaftarkan...", Toast.LENGTH_SHORT).show();
         }
+    }
 
-        if (password.length() < 8) {
-            etPassword.setError("Password minimal 8 karakter");
-            etPassword.requestFocus();
-            return;
-        }
+    private void Login() {
+        String email = binding.etEmail.getText().toString().trim();
+        String password = binding.etPassword.getText().toString().trim();
 
-        // Kalo udah bener pindah ke Home Page
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-        startActivity(intent);
-        finish();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Login Berhasil
+                        Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+
+                        // Animasi transisi
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+                        finish(); // Tutup halaman login
+                    } else {
+                        // Login Gagal
+                        String errorMsg = task.getException() != null ? task.getException().getMessage() : "Login Gagal";
+                        Toast.makeText(LoginActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 }
