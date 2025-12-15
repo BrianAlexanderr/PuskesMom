@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Toast;
@@ -25,30 +27,36 @@ import com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    FirebaseAuth auth;
-
-    private ActivityResultLauncher<String> notificationPermissionLauncher;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
-        auth = FirebaseAuth.getInstance();
-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
-        binding.login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(i);
-            }
-        });
+        new Handler(Looper.getMainLooper())
+                .postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean isLoggedIn = auth.getCurrentUser() != null;
 
+                        Intent intent = null;
+
+                        if (isLoggedIn) {
+                            intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        }else {
+                            intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        }
+
+                        startActivity(intent);
+
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        finish();
+                    }
+                }, 1500);
     }
 }
