@@ -20,6 +20,24 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Name"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/pavanam_regular"/>
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_white_input"
+        android:hint="Masukkan Nama Lengkap"
+        android:padding="5dp"
+        android:textColor="#9F9EA2"
+        android:inputType="textPersonName"/>
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="Email"
         android:textSize="20sp"
         android:textColor="@color/white"
@@ -73,12 +91,12 @@
         android:textColor="#9F9EA2"
         android:inputType="textPassword"/>
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sudah Memiliki Akun?"
-            android:textColor="@android:color/white"/>
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sudah Memiliki Akun?"
+        android:textColor="@android:color/white"/>
 
     <TextView
         android:id="@+id/tvLogin"
