@@ -1,0 +1,382 @@
+Index: app/src/main/java/com/example/puskesmom/RegisterActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.puskesmom;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.text.TextUtils;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\nimport android.widget.EditText;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\npublic class RegisterActivity extends AppCompatActivity {\r\n\r\n    private EditText etEmail, etPassword, etConfirmPw;\r\n    private Button btnRegister;\r\n    private TextView tvLogin;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_register);\r\n\r\n        etEmail = findViewById(R.id.etEmail);\r\n        etPassword = findViewById(R.id.etPassword);\r\n        etConfirmPw = findViewById(R.id.etConfirmPw);\r\n        btnRegister = findViewById(R.id.btnRegister);\r\n        tvLogin = findViewById(R.id.tvLogin);\r\n\r\n        btnRegister.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                validateRegister();\r\n            }\r\n        });\r\n\r\n        // Text Login → balik ke LoginActivity\r\n        tvLogin.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);\r\n                startActivity(intent);\r\n                finish();\r\n            }\r\n        });\r\n    }\r\n\r\n    private void validateRegister() {\r\n        String email = etEmail.getText().toString().trim();\r\n        String password = etPassword.getText().toString().trim();\r\n        String confirmPw = etConfirmPw.getText().toString().trim();\r\n\r\n        if (TextUtils.isEmpty(email)) {\r\n            etEmail.setError(\"Email wajib diisi\");\r\n            etEmail.requestFocus();\r\n            return;\r\n        }\r\n\r\n        if (email.length() < 4) {\r\n            etEmail.setError(\"Email minimal 4 karakter\");\r\n            etEmail.requestFocus();\r\n            return;\r\n        }\r\n\r\n        if (TextUtils.isEmpty(password)) {\r\n            etPassword.setError(\"Password wajib diisi\");\r\n            etPassword.requestFocus();\r\n            return;\r\n        }\r\n\r\n        if (password.length() < 8) {\r\n            etPassword.setError(\"Password minimal 8 karakter\");\r\n            etPassword.requestFocus();\r\n            return;\r\n        }\r\n\r\n        if (TextUtils.isEmpty(confirmPw)) {\r\n            etConfirmPw.setError(\"Confirm password wajib diisi\");\r\n            etConfirmPw.requestFocus();\r\n            return;\r\n        }\r\n\r\n        if (!password.equals(confirmPw)) {\r\n            etConfirmPw.setError(\"Password tidak sama\");\r\n            etConfirmPw.requestFocus();\r\n            return;\r\n        }\r\n\r\n        // Kalo udah Register, user bakal disuruh login\r\n        // Mungkin bisa diubah juga jadi langsung ke Home Page kalo mau\r\n        // Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);\r\n        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);\r\n        startActivity(intent);\r\n        finish();\r\n    }\r\n}\r\n
+===================================================================
+diff --git a/app/src/main/java/com/example/puskesmom/RegisterActivity.java b/app/src/main/java/com/example/puskesmom/RegisterActivity.java
+--- a/app/src/main/java/com/example/puskesmom/RegisterActivity.java	(revision 0bafd907d3a862fcccf4c0d1c37dd4f9a80c8d37)
++++ b/app/src/main/java/com/example/puskesmom/RegisterActivity.java	(date 1765809754423)
+@@ -1,40 +1,74 @@
+ package com.example.puskesmom;
+ 
++import android.app.ProgressDialog;
+ import android.content.Intent;
+ import android.os.Bundle;
+ import android.text.TextUtils;
++import android.util.Log;
+ import android.view.View;
+ import android.widget.Button;
+ import android.widget.EditText;
+ import android.widget.TextView;
++import android.widget.Toast;
+ 
++import androidx.annotation.NonNull;
+ import androidx.appcompat.app.AppCompatActivity;
+ 
++import com.google.android.gms.tasks.OnCompleteListener;
++import com.google.android.gms.tasks.OnFailureListener;
++import com.google.android.gms.tasks.OnSuccessListener;
++import com.google.android.gms.tasks.Task;
++import com.google.firebase.auth.AuthResult;
++import com.google.firebase.auth.FirebaseAuth;
++import com.google.firebase.firestore.DocumentReference;
++import com.google.firebase.firestore.FieldValue;
++import com.google.firebase.firestore.FirebaseFirestore;
++
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Objects;
++
+ public class RegisterActivity extends AppCompatActivity {
+ 
+-    private EditText etEmail, etPassword, etConfirmPw;
++    private EditText etName, etEmail, etPassword, etConfirmPw;
+     private Button btnRegister;
+     private TextView tvLogin;
+ 
++    // Firebase Declaration
++    private FirebaseAuth mAuth;
++    private FirebaseFirestore db; // Added Firestore
++    private ProgressDialog progressDialog;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_register);
+ 
++        // Initialize Firebase
++        mAuth = FirebaseAuth.getInstance();
++        db = FirebaseFirestore.getInstance(); // Initialize Firestore
++
++        // Initialize Views
++        etName = findViewById(R.id.etName);
+         etEmail = findViewById(R.id.etEmail);
+         etPassword = findViewById(R.id.etPassword);
+         etConfirmPw = findViewById(R.id.etConfirmPw);
+         btnRegister = findViewById(R.id.btnRegister);
+         tvLogin = findViewById(R.id.tvLogin);
+ 
++        // Setup Loading Dialog
++        progressDialog = new ProgressDialog(this);
++        progressDialog.setTitle("Loading");
++        progressDialog.setMessage("Mendaftarkan akun anda...");
++        progressDialog.setCancelable(false);
++
+         btnRegister.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+-                validateRegister();
++                validateAndRegister();
+             }
+         });
+ 
+-        // Text Login → balik ke LoginActivity
+         tvLogin.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+@@ -45,52 +79,105 @@
+         });
+     }
+ 
+-    private void validateRegister() {
++    private void validateAndRegister() {
++        String name = etName.getText().toString().trim();
+         String email = etEmail.getText().toString().trim();
+         String password = etPassword.getText().toString().trim();
+         String confirmPw = etConfirmPw.getText().toString().trim();
+ 
++        if (TextUtils.isEmpty(name)) {
++            etName.setError("Nama Lengkap wajib diisi");
++            etName.requestFocus();
++            return;
++        }
+         if (TextUtils.isEmpty(email)) {
+             etEmail.setError("Email wajib diisi");
+             etEmail.requestFocus();
+             return;
+         }
+-
+         if (email.length() < 4) {
+             etEmail.setError("Email minimal 4 karakter");
+             etEmail.requestFocus();
+             return;
+         }
+-
+         if (TextUtils.isEmpty(password)) {
+             etPassword.setError("Password wajib diisi");
+             etPassword.requestFocus();
+             return;
+         }
+-
+         if (password.length() < 8) {
+             etPassword.setError("Password minimal 8 karakter");
+             etPassword.requestFocus();
+             return;
+         }
+-
+         if (TextUtils.isEmpty(confirmPw)) {
+             etConfirmPw.setError("Confirm password wajib diisi");
+             etConfirmPw.requestFocus();
+             return;
+         }
+-
+         if (!password.equals(confirmPw)) {
+             etConfirmPw.setError("Password tidak sama");
+             etConfirmPw.requestFocus();
+             return;
+         }
+ 
+-        // Kalo udah Register, user bakal disuruh login
+-        // Mungkin bisa diubah juga jadi langsung ke Home Page kalo mau
+-        // Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+-        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+-        startActivity(intent);
+-        finish();
++        // Proceed to Firebase Registration
++        registerToFirebase(name, email, password);
++    }
++
++    private void registerToFirebase(String name, String email, String password) {
++        progressDialog.show();
++
++        // 1. Create Authentication User
++        mAuth.createUserWithEmailAndPassword(email, password)
++                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
++                    @Override
++                    public void onComplete(@NonNull Task<AuthResult> task) {
++                        if (task.isSuccessful()) {
++                            // Auth Success -> Save to Firestore
++                            String userID = mAuth.getCurrentUser().getUid();
++                            saveUserToFirestore(userID, name, email);
++                        } else {
++                            progressDialog.dismiss();
++                            Toast.makeText(RegisterActivity.this, "Register Gagal: " + task.getException().getMessage(),
++                                    Toast.LENGTH_LONG).show();
++                        }
++                    }
++                });
++    }
++
++    private void saveUserToFirestore(String userID, String name, String email) {
++        // 2. Prepare Data
++        Map<String, Object> userMap = new HashMap<>();
++        userMap.put("name", name);
++        userMap.put("email", email);
++        userMap.put("createdAt", FieldValue.serverTimestamp());
++
++        // 3. Save to "users" collection
++        db.collection("users").document(userID)
++                .set(userMap)
++                .addOnSuccessListener(new OnSuccessListener<Void>() {
++                    @Override
++                    public void onSuccess(Void aVoid) {
++                        progressDialog.dismiss();
++                        Toast.makeText(RegisterActivity.this, "Register Berhasil!", Toast.LENGTH_SHORT).show();
++
++                        // Sign out so they have to login again (Optional, depends on flow)
++                        mAuth.signOut();
++
++                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
++                        startActivity(intent);
++                        // overridePendingTransition(R.anim.fade_in, R.anim.fade_out); // Uncomment if you have these anim files
++                        finish();
++                    }
++                })
++                .addOnFailureListener(new OnFailureListener() {
++                    @Override
++                    public void onFailure(@NonNull Exception e) {
++                        progressDialog.dismiss();
++                        Toast.makeText(RegisterActivity.this, "Gagal simpan data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
++                        Log.d("RegisterActivity", "Error adding document: " + e.getMessage());
++                    }
++                });
+     }
+ }
+Index: app/src/main/java/com/example/puskesmom/LoginActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.puskesmom;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.text.TextUtils;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\nimport android.widget.EditText;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\npublic class LoginActivity extends AppCompatActivity {\r\n\r\n    private EditText etEmail, etPassword;\r\n    private Button btnLogin;\r\n    private TextView tvRegister, tvForgot;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_login);\r\n\r\n        etEmail = findViewById(R.id.etEmail);\r\n        etPassword = findViewById(R.id.etPassword);\r\n        btnLogin = findViewById(R.id.btnLogin);\r\n        tvRegister = findViewById(R.id.tvRegister);\r\n        tvForgot = findViewById(R.id.tvForgot);\r\n\r\n        btnLogin.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                validateLogin();\r\n            }\r\n        });\r\n\r\n        tvRegister.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);\r\n                startActivity(intent);\r\n            }\r\n        });\r\n\r\n        // Lupa Password → sengaja kosong (belum dipakai)\r\n        tvForgot.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                // TODO: nanti\r\n            }\r\n        });\r\n    }\r\n\r\n    private void validateLogin() {\r\n        String email = etEmail.getText().toString().trim();\r\n        String password = etPassword.getText().toString().trim();\r\n\r\n        // Email Validation\r\n        if (TextUtils.isEmpty(email)) {\r\n            etEmail.setError(\"Email wajib diisi\");\r\n            etEmail.requestFocus();\r\n            return;\r\n        }\r\n\r\n        if (email.length() < 4) {\r\n            etEmail.setError(\"Email minimal 4 karakter\");\r\n            etEmail.requestFocus();\r\n            return;\r\n        }\r\n\r\n        // Password Validation\r\n        if (TextUtils.isEmpty(password)) {\r\n            etPassword.setError(\"Password wajib diisi\");\r\n            etPassword.requestFocus();\r\n            return;\r\n        }\r\n\r\n        if (password.length() < 8) {\r\n            etPassword.setError(\"Password minimal 8 karakter\");\r\n            etPassword.requestFocus();\r\n            return;\r\n        }\r\n\r\n        // Kalo udah bener pindah ke Home Page\r\n        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);\r\n        startActivity(intent);\r\n        finish();\r\n    }\r\n}\r\n
+===================================================================
+diff --git a/app/src/main/java/com/example/puskesmom/LoginActivity.java b/app/src/main/java/com/example/puskesmom/LoginActivity.java
+--- a/app/src/main/java/com/example/puskesmom/LoginActivity.java	(revision 0bafd907d3a862fcccf4c0d1c37dd4f9a80c8d37)
++++ b/app/src/main/java/com/example/puskesmom/LoginActivity.java	(date 1765810016354)
+@@ -1,5 +1,6 @@
+ package com.example.puskesmom;
+ 
++import android.app.ProgressDialog;
+ import android.content.Intent;
+ import android.os.Bundle;
+ import android.text.TextUtils;
+@@ -7,20 +8,42 @@
+ import android.widget.Button;
+ import android.widget.EditText;
+ import android.widget.TextView;
++import android.widget.Toast;
+ 
++import androidx.annotation.NonNull;
+ import androidx.appcompat.app.AppCompatActivity;
+ 
++import com.google.android.gms.tasks.OnCompleteListener;
++import com.google.android.gms.tasks.Task;
++import com.google.firebase.auth.AuthResult;
++import com.google.firebase.auth.FirebaseAuth;
++import com.google.firebase.auth.FirebaseUser;
++
+ public class LoginActivity extends AppCompatActivity {
+ 
+     private EditText etEmail, etPassword;
+     private Button btnLogin;
+     private TextView tvRegister, tvForgot;
+ 
++    // Firebase Declarations
++    private FirebaseAuth mAuth;
++    private ProgressDialog progressDialog;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_login);
+ 
++        // Initialize Firebase Auth
++        mAuth = FirebaseAuth.getInstance();
++
++        // Setup Loading Dialog
++        progressDialog = new ProgressDialog(this);
++        progressDialog.setTitle("Loading");
++        progressDialog.setMessage("Sedang memverifikasi akun...");
++        progressDialog.setCancelable(false);
++
++        // Init Views
+         etEmail = findViewById(R.id.etEmail);
+         etPassword = findViewById(R.id.etPassword);
+         btnLogin = findViewById(R.id.btnLogin);
+@@ -42,14 +65,28 @@
+             }
+         });
+ 
+-        // Lupa Password → sengaja kosong (belum dipakai)
+         tvForgot.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+-                // TODO: nanti
++                // TODO: Add Forgot Password Logic later
++                Toast.makeText(LoginActivity.this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show();
+             }
+         });
+     }
++
++    // Check if user is already logged in when app starts
++    @Override
++    public void onStart() {
++        super.onStart();
++        // Check if user is signed in (non-null) and update UI accordingly.
++        FirebaseUser currentUser = mAuth.getCurrentUser();
++        if(currentUser != null){
++            // User is already logged in, go straight to Home
++            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
++            startActivity(intent);
++            finish();
++        }
++    }
+ 
+     private void validateLogin() {
+         String email = etEmail.getText().toString().trim();
+@@ -81,9 +118,32 @@
+             return;
+         }
+ 
+-        // Kalo udah bener pindah ke Home Page
+-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+-        startActivity(intent);
+-        finish();
++        // Validation Passed -> Proceed to Firebase Login
++        performLogin(email, password);
++    }
++
++    private void performLogin(String email, String password) {
++        progressDialog.show();
++
++        mAuth.signInWithEmailAndPassword(email, password)
++                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
++                    @Override
++                    public void onComplete(@NonNull Task<AuthResult> task) {
++                        progressDialog.dismiss();
++                        if (task.isSuccessful()) {
++                            // Login Success
++                            Toast.makeText(LoginActivity.this, "Login Berhasil!", Toast.LENGTH_SHORT).show();
++
++                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
++                            startActivity(intent);
++                            finish(); // Destroy LoginActivity so back button doesn't return here
++                        } else {
++                            // Login Failed
++                            String errorMessage = task.getException().getMessage();
++                            Toast.makeText(LoginActivity.this, "Login Gagal: " + errorMessage,
++                                    Toast.LENGTH_LONG).show();
++                        }
++                    }
++                });
+     }
+ }
+Index: app/src/main/res/layout/activity_register.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:orientation=\"vertical\"\r\n    android:paddingVertical=\"10dp\"\r\n    android:paddingHorizontal=\"20dp\"\r\n    android:background=\"#64b5e4\">\r\n\r\n    <ImageView\r\n        android:id=\"@+id/splashLogo\"\r\n        android:layout_width=\"180dp\"\r\n        android:layout_height=\"180dp\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:layout_gravity=\"center\"\r\n        android:src=\"@drawable/logo_app\"\r\n        android:contentDescription=\"Splash Logo\" />\r\n\r\n    <TextView\r\n        android:layout_marginTop=\"10dp\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"Email\"\r\n        android:textSize=\"20sp\"\r\n        android:textColor=\"@color/white\"\r\n        android:fontFamily=\"@font/pavanam_regular\"/>\r\n\r\n    <EditText\r\n        android:id=\"@+id/etEmail\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:background=\"@drawable/bg_white_input\"\r\n        android:hint=\"example@email.com\"\r\n        android:padding=\"5dp\"\r\n        android:textColor=\"#9F9EA2\"\r\n        android:inputType=\"textEmailAddress\"/>\r\n\r\n    <TextView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"Password\"\r\n        android:textSize=\"20sp\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:textColor=\"@color/white\"\r\n        android:fontFamily=\"@font/pavanam_regular\"/>\r\n\r\n    <EditText\r\n        android:id=\"@+id/etPassword\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:background=\"@drawable/bg_white_input\"\r\n        android:hint=\"Masukkan Password Anda\"\r\n        android:padding=\"5dp\"\r\n        android:textColor=\"#9F9EA2\"\r\n        android:inputType=\"textPassword\"/>\r\n\r\n    <TextView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"Confirm Password\"\r\n        android:textSize=\"20sp\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:textColor=\"@color/white\"\r\n        android:fontFamily=\"@font/pavanam_regular\"/>\r\n\r\n    <EditText\r\n        android:id=\"@+id/etConfirmPw\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:background=\"@drawable/bg_white_input\"\r\n        android:hint=\"Masukkan Kembali Password Anda\"\r\n        android:padding=\"5dp\"\r\n        android:textColor=\"#9F9EA2\"\r\n        android:inputType=\"textPassword\"/>\r\n\r\n        <TextView\r\n            android:layout_marginTop=\"10dp\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"Sudah Memiliki Akun?\"\r\n            android:textColor=\"@android:color/white\"/>\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvLogin\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"Login\"\r\n        android:textColor=\"@android:color/white\"\r\n        android:textSize=\"14sp\"\r\n        android:textStyle=\"bold\"\r\n        android:clickable=\"true\"\r\n        android:focusable=\"true\"/>\r\n\r\n    <Button\r\n        android:id=\"@+id/btnRegister\"\r\n        android:layout_width=\"200dp\"\r\n        android:layout_height=\"60dp\"\r\n        android:layout_marginTop=\"32dp\"\r\n        android:textSize=\"24sp\"\r\n        android:text=\"Register\"\r\n        android:fontFamily=\"@font/paytone_one\"\r\n        android:textColor=\"#6CB9E6\"\r\n        android:backgroundTint=\"@color/white\"\r\n        android:layout_gravity=\"center\"\r\n        android:textStyle=\"bold\"/>\r\n\r\n</LinearLayout>
+===================================================================
+diff --git a/app/src/main/res/layout/activity_register.xml b/app/src/main/res/layout/activity_register.xml
+--- a/app/src/main/res/layout/activity_register.xml	(revision 0bafd907d3a862fcccf4c0d1c37dd4f9a80c8d37)
++++ b/app/src/main/res/layout/activity_register.xml	(date 1765809254282)
+@@ -20,6 +20,24 @@
+         android:layout_marginTop="10dp"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
++        android:text="Name"
++        android:textSize="20sp"
++        android:textColor="@color/white"
++        android:fontFamily="@font/pavanam_regular"/>
++
++    <EditText
++        android:id="@+id/etName"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:background="@drawable/bg_white_input"
++        android:hint="Masukkan Nama Lengkap"
++        android:padding="5dp"
++        android:textColor="#9F9EA2"
++        android:inputType="textPersonName"/>
++    <TextView
++        android:layout_marginTop="20dp"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
+         android:text="Email"
+         android:textSize="20sp"
+         android:textColor="@color/white"
+@@ -73,12 +91,12 @@
+         android:textColor="#9F9EA2"
+         android:inputType="textPassword"/>
+ 
+-        <TextView
+-            android:layout_marginTop="10dp"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content"
+-            android:text="Sudah Memiliki Akun?"
+-            android:textColor="@android:color/white"/>
++    <TextView
++        android:layout_marginTop="10dp"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:text="Sudah Memiliki Akun?"
++        android:textColor="@android:color/white"/>
+ 
+     <TextView
+         android:id="@+id/tvLogin"

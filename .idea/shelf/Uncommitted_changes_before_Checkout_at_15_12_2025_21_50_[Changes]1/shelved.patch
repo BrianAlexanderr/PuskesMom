@@ -1,0 +1,275 @@
+Index: app/src/main/java/com/example/puskesmom/HomeActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.puskesmom;\r\n\r\nimport android.os.Bundle;\r\n\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.appcompat.app.AlertDialog;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\nimport androidx.fragment.app.Fragment;\r\n\r\nimport com.example.puskesmom.databinding.ActivityHomeBinding;\r\nimport com.example.puskesmom.fragment.HomeFragment;\r\nimport com.example.puskesmom.fragment.PredictFragment;\r\nimport com.example.puskesmom.fragment.ScheduleFragment;\r\n\r\npublic class HomeActivity extends AppCompatActivity {\r\n\r\n    ActivityHomeBinding binding;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        binding = ActivityHomeBinding.inflate(getLayoutInflater());\r\n        super.onCreate(savedInstanceState);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(binding.getRoot());\r\n        binding.bottomNavigation.setItemIconTintList(null);\r\n\r\n        if(savedInstanceState == null){\r\n            getSupportFragmentManager().beginTransaction()\r\n                    .replace(R.id.fragment_container, new HomeFragment())\r\n                    .commit();\r\n        }\r\n\r\n        binding.bottomNavigation.setOnItemSelectedListener(item -> {\r\n            int itemId = item.getItemId();\r\n            if (itemId == R.id.nav_alert) {\r\n                showAlertDialog();\r\n                return false;\r\n            }\r\n\r\n            Fragment selectedFragment = null;\r\n\r\n            if (itemId == R.id.nav_home) {\r\n                selectedFragment = new HomeFragment();\r\n            } else if (itemId == R.id.nav_schedule) {\r\n                selectedFragment = new ScheduleFragment();\r\n            } else if (itemId == R.id.nav_community) {\r\n                selectedFragment = new PredictFragment();\r\n            } else if (itemId == R.id.nav_profile) {\r\n                selectedFragment = new ScheduleFragment();\r\n            }\r\n\r\n            // Replace the fragment\r\n            if (selectedFragment != null) {\r\n                getSupportFragmentManager().beginTransaction()\r\n                        .replace(R.id.fragment_container, selectedFragment)\r\n                        .commit();\r\n                return true;\r\n            }\r\n\r\n            return false;\r\n        });\r\n\r\n    }\r\n\r\n    private void showAlertDialog() {\r\n        new AlertDialog.Builder(this)\r\n                .setTitle(\"Emergency Alert\")\r\n                .setMessage(\"Are you sure you want to send an SOS signal?\")\r\n                .setPositiveButton(\"YES\", (dialog, which) -> {\r\n                    // Code to send alert goes here\r\n                })\r\n                .setNegativeButton(\"Cancel\", null)\r\n                .show();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/puskesmom/HomeActivity.java b/app/src/main/java/com/example/puskesmom/HomeActivity.java
+--- a/app/src/main/java/com/example/puskesmom/HomeActivity.java	(revision 0bafd907d3a862fcccf4c0d1c37dd4f9a80c8d37)
++++ b/app/src/main/java/com/example/puskesmom/HomeActivity.java	(date 1765810175497)
+@@ -1,16 +1,30 @@
+ package com.example.puskesmom;
+ 
++import android.Manifest;
++import android.app.NotificationChannel;
++import android.app.NotificationManager;
++import android.content.Context;
++import android.content.pm.PackageManager;
++import android.os.Build;
+ import android.os.Bundle;
++import android.os.VibrationEffect;
++import android.os.Vibrator;
+ 
+ import androidx.activity.EdgeToEdge;
+ import androidx.appcompat.app.AlertDialog;
+ import androidx.appcompat.app.AppCompatActivity;
++import androidx.core.app.ActivityCompat;
++import androidx.core.app.NotificationCompat;
++import androidx.core.app.NotificationManagerCompat;
++import androidx.core.content.ContextCompat;
+ import androidx.core.graphics.Insets;
+ import androidx.core.view.ViewCompat;
+ import androidx.core.view.WindowInsetsCompat;
+ import androidx.fragment.app.Fragment;
+ 
+ import com.example.puskesmom.databinding.ActivityHomeBinding;
++import com.example.puskesmom.databinding.ActivityMainBinding;
++import com.example.puskesmom.fragment.ChatFragment;
+ import com.example.puskesmom.fragment.HomeFragment;
+ import com.example.puskesmom.fragment.PredictFragment;
+ import com.example.puskesmom.fragment.ScheduleFragment;
+@@ -19,6 +33,9 @@
+ 
+     ActivityHomeBinding binding;
+ 
++    private static final String CHANNEL_ID = "sos_alert_channel";
++    private static final int NOTIFICATION_ID = 1;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         binding = ActivityHomeBinding.inflate(getLayoutInflater());
+@@ -27,6 +44,8 @@
+         setContentView(binding.getRoot());
+         binding.bottomNavigation.setItemIconTintList(null);
+ 
++        createNotificationChannel();
++
+         if(savedInstanceState == null){
+             getSupportFragmentManager().beginTransaction()
+                     .replace(R.id.fragment_container, new HomeFragment())
+@@ -49,10 +68,9 @@
+             } else if (itemId == R.id.nav_community) {
+                 selectedFragment = new PredictFragment();
+             } else if (itemId == R.id.nav_profile) {
+-                selectedFragment = new ScheduleFragment();
++                selectedFragment = new ChatFragment();
+             }
+ 
+-            // Replace the fragment
+             if (selectedFragment != null) {
+                 getSupportFragmentManager().beginTransaction()
+                         .replace(R.id.fragment_container, selectedFragment)
+@@ -65,14 +83,65 @@
+ 
+     }
+ 
++    private void createNotificationChannel() {
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++            CharSequence name = "SOS Alerts";
++            String description = "Channel for Emergency Alerts";
++            int importance = NotificationManager.IMPORTANCE_HIGH;
++            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
++            channel.setDescription(description);
++
++            NotificationManager notificationManager = getSystemService(NotificationManager.class);
++            notificationManager.createNotificationChannel(channel);
++        }
++    }
++
+     private void showAlertDialog() {
+         new AlertDialog.Builder(this)
+                 .setTitle("Emergency Alert")
+                 .setMessage("Are you sure you want to send an SOS signal?")
+                 .setPositiveButton("YES", (dialog, which) -> {
+-                    // Code to send alert goes here
++                    triggerVibration();
++                    checkPermissionAndNotify();
+                 })
+                 .setNegativeButton("Cancel", null)
+                 .show();
+     }
++
++    private void checkPermissionAndNotify() {
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
++            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
++                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
++            } else {
++                sendNotification();
++            }
++        } else {
++            sendNotification();
++        }
++    }
++
++    private void sendNotification() {
++        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
++                .setSmallIcon(R.drawable.ic_notification)
++                .setContentTitle("SOS Alert Sent!")
++                .setContentText("Emergency contacts have been notified.")
++                .setPriority(NotificationCompat.PRIORITY_HIGH)
++                .setAutoCancel(true);
++
++        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
++        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
++            notificationManager.notify(NOTIFICATION_ID, builder.build());
++        }
++    }
++
++    private void triggerVibration() {
++        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
++        if (v != null) {
++            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
++            } else {
++                v.vibrate(500); // Vibrate for 500 milliseconds
++            }
++        }
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/puskesmom/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.puskesmom;\r\n\r\nimport android.Manifest;\r\nimport android.content.Intent;\r\nimport android.content.pm.PackageManager;\r\nimport android.os.Build;\r\nimport android.os.Bundle;\r\nimport android.text.method.PasswordTransformationMethod;\r\nimport android.view.View;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.activity.result.ActivityResultLauncher;\r\nimport androidx.activity.result.contract.ActivityResultContracts;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.app.ActivityCompat;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\n\r\nimport com.example.puskesmom.databinding.ActivityMainBinding;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    ActivityMainBinding binding;\r\n    FirebaseAuth auth;\r\n\r\n    private ActivityResultLauncher<String> notificationPermissionLauncher;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        binding = ActivityMainBinding.inflate(getLayoutInflater());\r\n        super.onCreate(savedInstanceState);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(binding.getRoot());\r\n        auth = FirebaseAuth.getInstance();\r\n        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);\r\n            return insets;\r\n        });\r\n\r\n        binding.login.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                Intent i = new Intent(getApplicationContext(), HomeActivity.class);\r\n                startActivity(i);\r\n            }\r\n        });\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/puskesmom/MainActivity.java b/app/src/main/java/com/example/puskesmom/MainActivity.java
+--- a/app/src/main/java/com/example/puskesmom/MainActivity.java	(revision 0bafd907d3a862fcccf4c0d1c37dd4f9a80c8d37)
++++ b/app/src/main/java/com/example/puskesmom/MainActivity.java	(date 1765808757830)
+@@ -5,6 +5,8 @@
+ import android.content.pm.PackageManager;
+ import android.os.Build;
+ import android.os.Bundle;
++import android.os.Handler;
++import android.os.Looper;
+ import android.text.method.PasswordTransformationMethod;
+ import android.view.View;
+ import android.widget.Toast;
+@@ -25,7 +27,7 @@
+ public class MainActivity extends AppCompatActivity {
+ 
+     ActivityMainBinding binding;
+-    FirebaseAuth auth;
++    FirebaseAuth auth = FirebaseAuth.getInstance();
+ 
+     private ActivityResultLauncher<String> notificationPermissionLauncher;
+ 
+@@ -33,22 +35,31 @@
+     protected void onCreate(Bundle savedInstanceState) {
+         binding = ActivityMainBinding.inflate(getLayoutInflater());
+         super.onCreate(savedInstanceState);
+-        EdgeToEdge.enable(this);
+         setContentView(binding.getRoot());
+-        auth = FirebaseAuth.getInstance();
+-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+-            return insets;
+-        });
++        if (getSupportActionBar() != null) {
++            getSupportActionBar().hide();
++        }
+ 
+-        binding.login.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View view) {
+-                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+-                startActivity(i);
+-            }
+-        });
++        new Handler(Looper.getMainLooper())
++                .postDelayed(new Runnable() {
++                    @Override
++                    public void run() {
++                        boolean isLoggedIn = auth.getCurrentUser() != null;
++
++                        Intent intent = null;
++
++                        if (isLoggedIn) {
++                            intent = new Intent(getApplicationContext(), HomeActivity.class);
++                        }else {
++                            intent = new Intent(getApplicationContext(), LoginActivity.class);
++                        }
+ 
++                        startActivity(intent);
++
++                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
++                        finish();
++                    }
++                }, 1500);
+     }
++
+ }
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-permission android:name=\"android.permission.POST_NOTIFICATIONS\" />\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"PuskesMom\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.PuskesMom\">\r\n        <activity\r\n            android:name=\".HomeActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n\r\n        <meta-data\r\n            android:name=\"preloaded_fonts\"\r\n            android:resource=\"@array/preloaded_fonts\" />\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 0bafd907d3a862fcccf4c0d1c37dd4f9a80c8d37)
++++ b/app/src/main/AndroidManifest.xml	(date 1765810175503)
+@@ -4,6 +4,8 @@
+ 
+     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+ 
++    <uses-permission android:name="android.permission.VIBRATE" />
++
+     <application
+         android:allowBackup="true"
+         android:dataExtractionRules="@xml/data_extraction_rules"
+@@ -26,6 +28,14 @@
+             </intent-filter>
+         </activity>
+ 
++        <activity
++            android:name=".LoginActivity"
++            android:exported="false" />
++
++        <activity
++            android:name=".RegisterActivity"
++            android:exported="false" />
++
+         <meta-data
+             android:name="preloaded_fonts"
+             android:resource="@array/preloaded_fonts" />
+Index: app/src/main/res/anim/fade_in.xml
+===================================================================
+diff --git a/app/src/main/res/anim/fade_in.xml b/app/src/main/res/anim/fade_in.xml
+new file mode 100644
+--- /dev/null	(date 1765808685959)
++++ b/app/src/main/res/anim/fade_in.xml	(date 1765808685959)
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<alpha xmlns:android="http://schemas.android.com/apk/res/android"
++    android:duration="500"
++    android:fromAlpha="0.0"
++    android:toAlpha="1.0" />
+\ No newline at end of file
+Index: app/src/main/res/anim/fade_out.xml
+===================================================================
+diff --git a/app/src/main/res/anim/fade_out.xml b/app/src/main/res/anim/fade_out.xml
+new file mode 100644
+--- /dev/null	(date 1765808685969)
++++ b/app/src/main/res/anim/fade_out.xml	(date 1765808685969)
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<alpha xmlns:android="http://schemas.android.com/apk/res/android"
++    android:duration="500"
++    android:fromAlpha="1.0"
++    android:toAlpha="0.0" />
+\ No newline at end of file
