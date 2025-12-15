@@ -4,19 +4,29 @@ import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.method.PasswordTransformationMethod;
+import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.puskesmom.databinding.ActivityMainBinding;
@@ -24,12 +34,17 @@ import com.example.puskesmom.fragment.ChatFragment;
 import com.example.puskesmom.fragment.HomeFragment;
 import com.example.puskesmom.fragment.PredictFragment;
 import com.example.puskesmom.fragment.ScheduleFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions;
 
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
     private static final String CHANNEL_ID = "sos_alert_channel";
     private static final int NOTIFICATION_ID = 1;
+    private FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
         binding.bottomNavigation.setItemIconTintList(null);
+
+        mAuth = FirebaseAuth.getInstance();
 
         createNotificationChannel();
 
@@ -76,6 +93,22 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser == null){
+            sendToRegister();
+        }
+    }
+
+    private void sendToRegister() {
+        Intent registerIntent = new Intent(MainActivity.this, RegisterActivity.class);
+        registerIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(registerIntent);
+        finish();
     }
 
     private void createNotificationChannel() {
