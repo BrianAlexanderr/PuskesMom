@@ -42,6 +42,11 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <!-- Add this entire block inside your <application> tag -->
+        <activity
+            android:name=".ChatRoomActivity"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

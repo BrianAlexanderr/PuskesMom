@@ -27,8 +27,11 @@ import com.example.puskesmom.AddChildActivity;
 import com.example.puskesmom.LoginActivity;
 import com.example.puskesmom.MyChildActivity;
 import com.example.puskesmom.R;
+import com.example.puskesmom.RegisterActivity;
 import com.example.puskesmom.adapter.CalendarAdapter;
+import com.example.puskesmom.adapter.DoctorAdapter;
 import com.example.puskesmom.adapter.ImmunizationAdapter;
+import com.example.puskesmom.model.Doctor;
 import com.example.puskesmom.model.Immunization;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,6 +40,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -99,6 +103,10 @@ public class HomeFragment extends Fragment implements CalendarAdapter.OnItemList
         rvSchedule = view.findViewById(R.id.rv_schedule);
         rvSchedule.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        rvHomeDoctors = view.findViewById(R.id.rv_home_doctors);
+        rvHomeDoctors.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        loadHomeDoctors();
 
         ImageView btnPrev = view.findViewById(R.id.btn_prev_month);
         ImageView btnNext = view.findViewById(R.id.btn_next_month);
@@ -139,6 +147,63 @@ public class HomeFragment extends Fragment implements CalendarAdapter.OnItemList
 
     }
 
+    private void loadHomeDoctors() {
+        if (auth.getCurrentUser() == null) return;
+        String currentUid = auth.getCurrentUser().getUid();
+
+        // 1. First, get the list of doctors the user has ALREADY contacted
+        db.collection("users").document(currentUid)
+                .collection("active_chats")
+                .get()
+                .addOnSuccessListener(chatSnapshot -> {
+                    // Create a list of IDs to exclude
+                    List<String> contactedIds = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : chatSnapshot) {
+                        // Assuming the document ID in 'active_chats' is the Doctor's UID
+                        contactedIds.add(doc.getId());
+                    }
+
+                    // 2. Pass this list to the next function to filter the doctors
+                    fetchUncontactedDoctors(contactedIds);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("HomeFragment", "Error fetching active chats: " + e.getMessage());
+                });
+    }
+
+    private void fetchUncontactedDoctors(List<String> contactedIds) {
+        db.collection("doctor")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Doctor> homeList = new ArrayList<>();
+
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        Doctor doctor = doc.toObject(Doctor.class);
+
+                        // --- Manual UID Fix (Your existing logic) ---
+                        String realUid = doctor.getUid();
+                        if (realUid == null) {
+                            realUid = doc.getId();
+                            // Reconstruct object if setter is missing
+                            doctor = new Doctor(realUid, doctor.getName(), doctor.getSpecialty());
+                        }
+
+                        // --- THE FILTERING LOGIC ---
+                        // Only add to the list if the UID is NOT in the contactedIds list
+                        if (!contactedIds.contains(realUid)) {
+                            homeList.add(doctor);
+                        }
+                    }
+
+                    // Set Adapter with the filtered list
+                    DoctorAdapter homeAdapter = new DoctorAdapter(getContext(), homeList, R.layout.item_doctor_home);
+                    rvHomeDoctors.setAdapter(homeAdapter);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("HomeFragment", "Failed to load doctors: " + e.getMessage());
+                });
+    }
+
     private void showLogoutConfirmationDialog() {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Logout")
@@ -164,6 +229,7 @@ public class HomeFragment extends Fragment implements CalendarAdapter.OnItemList
         super.onResume();
         loadUserName();
         loadChildData();
+        loadHomeDoctors();
     }
 
     private void loadChildData() {
